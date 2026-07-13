@@ -15,20 +15,16 @@ app.use(express.json());
 
 // Настройка почтового сервера (SMTP)
 const transporter = nodemailer.createTransport({
-    host: 'smtp.gmail.com',
+    host: 'smtp-relay.brevo.com',
     port: 587,
     secure: false,
     auth: {
-        user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASS
+        user: process.env.BREVO_USER, // твоя почта от Brevo
+        pass: process.env.BREVO_PASS  // master password
     },
     tls: {
         rejectUnauthorized: false
-    },
-    connectionTimeout: 15000,
-    greetingTimeout: 10000,
-    socketTimeout: 15000,
-    family: 4
+    }
 });
 
 // Маршрут для обработки формы

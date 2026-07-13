@@ -3,7 +3,6 @@ const nodemailer = require('nodemailer');
 const cors = require('cors');
 require('dotenv').config();
 const dns = require('dns');
-dns.setDefaultResultOrder('ipv4first');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -19,8 +18,8 @@ const transporter = nodemailer.createTransport({
     port: 587,
     secure: false,
     auth: {
-        user: process.env.BREVO_USER, // твоя почта от Brevo
-        pass: process.env.BREVO_PASS  // master password
+        user: process.env.BREVO_USER,
+        pass: process.env.BREVO_PASS
     },
     tls: {
         rejectUnauthorized: false

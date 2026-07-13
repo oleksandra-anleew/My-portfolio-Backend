@@ -2,31 +2,31 @@ const express = require('express');
 const nodemailer = require('nodemailer');
 const cors = require('cors');
 require('dotenv').config();
-const dns = require('dns');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// Разрешаем фронтенду слать запросы (CORS)
 app.use(cors());
-// Позволяем серверу читать JSON-данные
 app.use(express.json());
 
-// Настройка почтового сервера (SMTP)
+// Настройка SMTP (Brevo)
 const transporter = nodemailer.createTransport({
     host: 'smtp-relay.brevo.com',
-    port: 587,
+    port: 2525,               // ← более надёжный порт на Render
     secure: false,
     auth: {
-        user: process.env.BREVO_USER,
-        pass: process.env.BREVO_PASS
+        user: process.env.BREVO_USER,   // логин вида ...@smtp-brevo.com
+        pass: process.env.BREVO_PASS    // мастер-пароль
     },
     tls: {
         rejectUnauthorized: false
-    }
+    },
+    connectionTimeout: 20000,  // 20 секунд на подключение
+    greetingTimeout: 15000,
+    socketTimeout: 20000
 });
 
-// Маршрут для обработки формы
+// Маршрут для формы
 app.post('/api/contact', (req, res) => {
     const { name, email, message } = req.body;
 
@@ -34,16 +34,14 @@ app.post('/api/contact', (req, res) => {
         return res.status(400).json({ error: 'All fields are required.' });
     }
 
-    // Что придет тебе на почту
     const mailOptions = {
-        from: process.env.EMAIL_USER,
-        to: process.env.EMAIL_USER, // Письмо придет тебе от самого себя
-        replyTo: email, // Но ответить можно будет клиенту в один клик
+        from: process.env.EMAIL_USER,   // твой Gmail (на который придёт ответ)
+        to: process.env.EMAIL_USER,     // туда же
+        replyTo: email,
         subject: `New Message from Portfolio: ${name}`,
         text: `Name: ${name}\nEmail: ${email}\n\nMessage:\n${message}`
     };
 
-    // Отправка
     transporter.sendMail(mailOptions, (error, info) => {
         if (error) {
             console.error('Error sending email:', error);

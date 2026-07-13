@@ -15,17 +15,20 @@ app.use(express.json());
 
 // Настройка почтового сервера (SMTP)
 const transporter = nodemailer.createTransport({
-    service: 'gmail',
+    host: 'smtp.gmail.com',
+    port: 465,               // используем 465
+    secure: true,            // true для 465
     auth: {
         user: process.env.EMAIL_USER,
         pass: process.env.EMAIL_PASS
     },
     tls: {
-        // иногда помогает избежать проблем с сертификатами
         rejectUnauthorized: false
     },
-    // Принудительно использовать IPv4
-    family: 4
+    connectionTimeout: 15000, // 15 секунд на подключение
+    greetingTimeout: 10000,
+    socketTimeout: 15000,
+    family: 4                // принудительный IPv4
 });
 
 // Маршрут для обработки формы

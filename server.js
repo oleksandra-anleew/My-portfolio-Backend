@@ -13,11 +13,17 @@ app.use(express.json());
 
 // Настройка почтового сервера (SMTP)
 const transporter = nodemailer.createTransport({
-    service: 'gmail', // Используем Gmail (или mail.ru / yandex)
+    service: 'gmail',
     auth: {
-        user: process.env.EMAIL_USER, // Твоя почта
-        pass: process.env.EMAIL_PASS  // Пароль приложения (не обычный пароль!)
-    }
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS
+    },
+    tls: {
+        // иногда помогает избежать проблем с сертификатами
+        rejectUnauthorized: false
+    },
+    // Принудительно использовать IPv4
+    family: 4
 });
 
 // Маршрут для обработки формы
